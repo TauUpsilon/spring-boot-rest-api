@@ -6,6 +6,7 @@ import com.example.restapitest.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +22,13 @@ public class ProductServiceController {
     ProductService productService;
 
     @GetMapping(value = "/products")
+    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<Object> getProduct() {
         return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
     }
 
     @PostMapping(value = "/products")
+    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<Object> createProduct(@RequestBody Product product) {
         productService.createProduct(product);
         return new ResponseEntity<>("Product is created successfully!", HttpStatus.CREATED);
