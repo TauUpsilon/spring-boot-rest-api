@@ -1,11 +1,9 @@
 package com.example.restapitest.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.example.restapitest.exception.ProductNotFoundException;
 import com.example.restapitest.model.Product;
+import com.example.restapitest.service.ProductService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,48 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductServiceController {
-    private static Map<String, Product> productRepo = new HashMap<>();
-    static {
-        Product honey = new Product();
-        honey.setId("1");
-        honey.setName("Honey");
-        productRepo.put(honey.getId(), honey);
 
-        Product almond = new Product();
-        almond.setId("2");
-        almond.setName("Almond");
-        productRepo.put(almond.getId(), almond);
-
-        Product banana = new Product();
-        banana.setId("3");
-        banana.setName("Banana");
-        productRepo.put(banana.getId(), banana);
-    }
+    @Autowired
+    ProductService productService;
 
     @GetMapping(value = "/products")
     public ResponseEntity<Object> getProduct() {
-        return new ResponseEntity<>(productRepo.values(), HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
     }
 
     @PostMapping(value = "/products")
     public ResponseEntity<Object> createProduct(@RequestBody Product product) {
-        productRepo.put(product.getId(), product);
+        productService.createProduct(product);
         return new ResponseEntity<>("Product is created successfully!", HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/products/{id}")
     public ResponseEntity<Object> updateProduct(@PathVariable("id") String id, @RequestBody Product product) {
-        if (!productRepo.containsKey(id))
-            throw new ProductNotFoundException();
-        productRepo.remove(id);
-        product.setId(id);
-        productRepo.put(id, product);
+        productService.updateProduct(id, product);
         return new ResponseEntity<>("Product is updated successfully!", HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/products/{id}")
     public ResponseEntity<Object> deleteProduct(@PathVariable("id") String id) {
-        productRepo.remove(id);
+        productService.deleteProduct(id);
         return new ResponseEntity<>("Product is deleted successfully!", HttpStatus.OK);
     }
 }
